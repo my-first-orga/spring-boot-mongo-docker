@@ -83,6 +83,19 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<distributionManagement>
+    <repository>
+        <id>nexus</id>
+        <url>http://3.110.193.108:8081/repository/release/</url>
+    </repository>
+</distributionManagement>
+	
+<distributionManagement>
+    <repository>
+        <id>nexus</id>
+        <url>http://3.110.193.108:8081/repository/snapshot/</url>
+    </repository>
+</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>
