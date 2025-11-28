@@ -1,4 +1,4 @@
-name: build and deploy the application
+name: build, scan and deploy the application
 
 on:
   workflow_dispatch:
@@ -8,25 +8,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout code to runner
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: setup java
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
           cache: maven
 
-      - name: SonarQube Scan
+      - name: Build, Test & SonarQube Scan
         env:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           mvn -B verify sonar:sonar \
-           -Dsonar.projectKey=myproject \
-           -Dsonar.host.url=$SONAR_HOST_URL \
-           -Dsonar.login=$SONAR_TOKEN
+            -Dsonar.projectKey=myproject \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.login=$SONAR_TOKEN
 
-      - name: build the war file
-        run: mvn clean package
+      - name: Build WAR file
+        run: mvn -B clean package
+
+      - name: Upload WAR to Tomcat
+        run: |
+          WAR_FILE=$(ls target/*.war)
+          echo "Deploying $WAR_FILE"
+          curl -u "${{ secrets.TOMCAT_USERNAME }}:${{ secrets.TOMCAT_PASSWORD }}" \
+            --upload-file "$WAR_FILE" \
+            "${{ secrets.TOMCAT_HOST }}/manager/text/deploy?path=/myapp&update=true"
