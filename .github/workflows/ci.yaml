@@ -5,6 +5,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: checkout code to runner
+        run: actions/checkout@v5
+        
       - name: build the war file
         uses: actions/setup-java@v4
         with:
