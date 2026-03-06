@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class UserController {
+
     private final UserRepository userRepository;
     
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -18,12 +21,19 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
+    // Health Check Endpoint
+    @GetMapping("/health")
+    @ResponseBody
+    public String health() {
+        return "Application is running";
+    }
+
     @PostMapping(value = "/save")
     public String save(@RequestParam("firstName") String firstName,
                        @RequestParam("lastName") String lastName,
                        @RequestParam("email") String email) {
 
-    	logger.info("Creating user name: "+firstName);
+        logger.info("Creating user name: " + firstName);
         User user = new User(firstName, lastName, email);
         userRepository.save(user);
 
